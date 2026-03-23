@@ -403,7 +403,7 @@ function loadHistory(id) {
 async function clearHistory() {
   if (!confirm('Slette alle lagrede poster?')) return;
   history = [];
-  renderHistory();
+  loadFromSupabase();
 }
 </script>
 </body>
