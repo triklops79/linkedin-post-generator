@@ -323,8 +323,8 @@ Skriv kun selve posten, ingen kommentarer.`;
       })
     });
     const data = await res.json();
+    console.log('API-svar:', JSON.stringify(data));
     const text = data.content?.[0]?.text || 'Noe gikk galt. Prøv igjen.';
-
     document.getElementById('postOutput').innerText = text;
 
     if (imgDataUrl) {
