@@ -340,11 +340,8 @@ Skriv kun selve posten, ingen kommentarer.`;
     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     // Save to history
-    const entry = { id: Date.now(), name, text, date: new Date().toLocaleDateString('nb-NO'), tone: selectedTone, lang: selectedLang };
-    history.unshift(entry);
-    if (history.length > 20) history = history.slice(0, 20);
-    localStorage.setItem('li_history', JSON.stringify(history));
-    renderHistory();
+  await saveToSupabase({ event_name: name, post_text: text, tone: selectedTone, language: selectedLang });
+  await loadFromSupabase();
 
   } catch(e) {
     document.getElementById('postOutput').innerText = 'Noe gikk galt. Prøv igjen.';
