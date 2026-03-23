@@ -218,8 +218,8 @@ let selectedTone = 'Profesjonell og engasjerende';
 let selectedLang = 'norsk';
 let selectedLength = 'middels (500–900 tegn)';
 let imgDataUrl = null;
-let history = JSON.parse(localStorage.getItem('li_history') || '[]');
-
+let history = [];
+ 
 document.querySelectorAll('.tone-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
