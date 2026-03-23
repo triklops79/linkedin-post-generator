@@ -45,8 +45,11 @@ module.exports = async function handler(req, res) {
   // Publish to LinkedIn via Make webhook
   if (req.method === 'PATCH') {
     try {
-      const { post_text, image_url } = req.body;
-      const response = await fetch(process.env.MAKE_WEBHOOK_URL, {
+      const { post_text, image_url, target } = req.body;
+      const webhookUrl = target === 'pbt'
+        ? process.env.MAKE_WEBHOOK_URL_2
+        : process.env.MAKE_WEBHOOK_URL;
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
