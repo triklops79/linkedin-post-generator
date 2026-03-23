@@ -183,21 +183,23 @@
       </button>
 
       <div class="result-card" id="resultCard">
-        <div class="result-header">
-          <span class="result-label">Ferdig post</span>
-          <div class="result-actions">
-            <button class="action-btn btn-outline" onclick="generatePost()">Prøv igjen</button>
-            <button class="action-btn btn-solid" onclick="copyPost()">Kopier tekst</button>
-          </div>
-        </div>
-        <div id="imgResultPreview" style="display:none; padding:1rem 1.25rem 0;"></div>
-        <div class="post-preview" id="postOutput" contenteditable="true"></div>
-        <div class="char-count">
-          <span id="charInfo"></span>
-          <span>LinkedIn anbefaler under 1300 tegn</span>
-        </div>
-      </div>
-    </div>
+       <div class="result-header">
+  <span class="result-label">Ferdig post</span>
+  <div class="result-actions">
+    <button class="action-btn btn-outline" onclick="generatePost()">Prøv igjen</button>
+    <button class="action-btn btn-solid" onclick="copyPost()">Kopier tekst</button>
+  </div>
+</div>
+<div id="imgResultPreview" style="display:none; padding:1rem 1.25rem 0;"></div>
+<div class="post-preview" id="postOutput" contenteditable="true"></div>
+<div class="char-count">
+  <span id="charInfo"></span>
+  <span>LinkedIn anbefaler under 1300 tegn</span>
+</div>
+<div style="padding: 1rem 1.25rem; border-top: 0.5px solid var(--border); display: flex; gap: 8px;">
+  <input type="text" id="adjustInput" placeholder="f.eks. &quot;Gjør den kortere&quot; eller &quot;Mer entusiastisk&quot;" style="flex: 1;">
+  <button class="action-btn btn-outline" onclick="adjustPost()" style="white-space: nowrap;">Juster ↗</button>
+</div>
 
     <div class="sidebar">
       <div class="card">
