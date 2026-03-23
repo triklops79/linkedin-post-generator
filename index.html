@@ -542,6 +542,7 @@ async function clearHistory() {
 async function publishToLinkedIn() {
   const post_text = document.getElementById('postOutput').innerText.trim();
   if (!post_text) return;
+  if (!confirm('Er du sikker på at du vil publisere denne posten til LinkedIn-siden din?')) return;
   const btn = document.getElementById('publishBtn');
   btn.textContent = 'Publiserer...';
   btn.disabled = true;
