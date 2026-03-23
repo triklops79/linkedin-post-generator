@@ -407,6 +407,43 @@ async function clearHistory() {
   history = [];
   loadFromSupabase();
 }
+async function adjustPost() {
+  const instruction = document.getElementById('adjustInput').value.trim();
+  if (!instruction) return;
+  const currentPost = document.getElementById('postOutput').innerText.trim();
+  if (!currentPost) return;
+
+  const btn = document.querySelector('[onclick="adjustPost()"]');
+  btn.textContent = 'Justerer...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Her er en LinkedIn-post:\n\n${currentPost}\n\nJuster posten basert på følgende instruksjon: "${instruction}"\n\nSkriv kun den justerte posten, ingen kommentarer.`
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text;
+    if (text) {
+      document.getElementById('postOutput').innerText = text;
+      document.getElementById('adjustInput').value = '';
+      updateCharCount();
+    }
+  } catch(e) {
+    console.error(e);
+  }
+
+  btn.textContent = 'Juster ↗';
+  btn.disabled = false;
+}
 </script>
 </body>
 </html>
