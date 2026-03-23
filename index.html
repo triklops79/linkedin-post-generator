@@ -365,34 +365,49 @@ function copyPost() {
   });
 }
 
+async function loadFromSupabase() {
+  try {
+    const res = await fetch('/api/generate', { method: 'GET' });
+    history = await res.json();
+    renderHistory();
+  } catch(e) { console.log('Kunne ikke laste historikk'); }
+}
+
+async function saveToSupabase(entry) {
+  try {
+    await fetch('/api/generate', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
+  } catch(e) { console.log('Kunne ikke lagre post'); }
+}
+
 function renderHistory() {
   const el = document.getElementById('historyList');
   if (!history.length) { el.innerHTML = '<p class="history-empty">Ingen poster ennå.<br>Generer din første post!</p>'; return; }
   el.innerHTML = history.map(h => `
-    <div class="history-item" onclick="loadHistory(${h.id})">
-      <div class="history-item-title">${h.name}</div>
-      <div class="history-item-meta">${h.date} · ${h.lang}</div>
-      <div class="history-item-preview">${h.text}</div>
+    <div class="history-item" onclick="loadHistory('${h.id}')">
+      <div class="history-item-title">${h.event_name}</div>
+      <div class="history-item-meta">${new Date(h.created_at).toLocaleDateString('nb-NO')} · ${h.language}</div>
+      <div class="history-item-preview">${h.post_text}</div>
     </div>`).join('');
 }
 
 function loadHistory(id) {
   const h = history.find(x => x.id === id);
   if (!h) return;
-  document.getElementById('postOutput').innerText = h.text;
+  document.getElementById('postOutput').innerText = h.post_text;
   document.getElementById('resultCard').style.display = 'block';
   updateCharCount();
   document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function clearHistory() {
+async function clearHistory() {
   if (!confirm('Slette alle lagrede poster?')) return;
   history = [];
-  localStorage.setItem('li_history', '[]');
   renderHistory();
 }
-
-renderHistory();
 </script>
 </body>
 </html>
