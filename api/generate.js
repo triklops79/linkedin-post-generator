@@ -25,7 +25,21 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: err.message });
     }
   }
-
+// Delete all posts from Supabase
+if (req.method === 'DELETE') {
+  try {
+    await fetch(`${process.env.SUPABASE_URL}/rest/v1/posts?id=neq.00000000-0000-0000-0000-000000000000`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': process.env.SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
+      }
+    });
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
   // Get posts from Supabase
   if (req.method === 'GET') {
     try {
