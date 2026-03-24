@@ -10,6 +10,8 @@ module.exports = async function handler(req, res) {
     try {
       const { image_base64, file_name, mime_type } = req.body;
       const buffer = Buffer.from(image_base64, 'base64');
+      console.log('Uploading to:', `${process.env.SUPABASE_URL}/storage/v1/object/images/${fileName}`);
+      console.log('Key starts with:', process.env.SUPABASE_ANON_KEY?.substring(0, 20));
       const fileName = `${Date.now()}_${file_name}`;
       const response = await fetch(
         `${process.env.SUPABASE_URL}/storage/v1/object/images/${fileName}`,
