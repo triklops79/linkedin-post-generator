@@ -651,6 +651,12 @@ function loadHistory(id) {
 
 async function clearHistory() {
   if (!confirm('Slette alle lagrede poster?')) return;
+  try {
+    await fetch('/api/generate', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch(e) { console.error(e); }
   history = [];
   renderHistory();
 }
