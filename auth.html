@@ -75,26 +75,36 @@ async function init() {
   const hash = window.location.hash;
   const params = new URLSearchParams(hash.substring(1));
   const type = params.get('type');
-  const accessToken = params.get('access_token');
+  const token = params.get('access_token');
   const refreshToken = params.get('refresh_token');
   const error = params.get('error');
 
-  if (error || !accessToken) {
+  if (error || !token) {
     document.getElementById('loadingCard').style.display = 'none';
     document.getElementById('errorCard').style.display = 'block';
     return;
   }
 
-  if (type === 'recovery' && accessToken) {
-    const { error: sessionError } = await sb.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken
+  if (type === 'recovery' && token) {
+    // Use verifyOtp with the token as OTP
+    const { error: otpError } = await sb.auth.verifyOtp({
+      token_hash: refreshToken,
+      type: 'recovery'
     });
-    if (sessionError) {
-      document.getElementById('loadingCard').style.display = 'none';
-      document.getElementById('errorCard').style.display = 'block';
-      return;
+
+    if (otpError) {
+      // Try with token directly
+      const { error: otpError2 } = await sb.auth.verifyOtp({
+        token_hash: token,
+        type: 'recovery'
+      });
+      if (otpError2) {
+        document.getElementById('loadingCard').style.display = 'none';
+        document.getElementById('errorCard').style.display = 'block';
+        return;
+      }
     }
+
     document.getElementById('loadingCard').style.display = 'none';
     document.getElementById('resetCard').style.display = 'block';
     document.getElementById('newPassword').focus();
