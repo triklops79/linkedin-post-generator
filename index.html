@@ -482,8 +482,8 @@ async function resetSubmit() {
   btn.disabled = true;
   btn.textContent = 'Sender...';
   const { error } = await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin
-  });
+  redirectTo: 'https://linkedin-post-generator-black.vercel.app/auth.html'
+});
   if (error) {
     errEl.textContent = 'Noe gikk galt. Sjekk e-postadressen og prøv igjen.';
     btn.disabled = false;
