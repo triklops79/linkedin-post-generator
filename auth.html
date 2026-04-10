@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sett nytt passord</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1a1a; --ink-muted: #6b6b6b; --ink-faint: #b0b0b0;
+    --surface: #fafaf8; --border: #e0ddd8;
+    --accent: #0a66c2; --accent-light: #e8f0f9;
+    --green: #057642; --red: #c0392b;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 400px; }
+  .logo { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; }
+  .logo svg { width: 18px; height: 18px; fill: white; }
+  h2 { font-family: 'Instrument Serif', serif; font-size: 1.5rem; font-weight: 400; margin-bottom: 1.25rem; }
+  h2 em { font-style: italic; color: var(--accent); }
+  .field { margin-bottom: 1rem; }
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-muted); margin-bottom: 5px; }
+  input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; outline: none; }
+  input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,102,194,0.1); background: white; }
+  .btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 0.5rem; }
+  .btn:hover { background: #0856a8; }
+  .btn:disabled { background: var(--ink-faint); cursor: not-allowed; }
+  .msg { font-size: 13px; margin-top: 0.75rem; min-height: 20px; }
+  .msg.error { color: var(--red); }
+  .msg.success { color: var(--green); }
+  .loading { text-align: center; color: var(--ink-muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="card" id="loadingCard">
+  <p class="loading">Verifiserer lenke...</p>
+</div>
+
+<div class="card" id="resetCard" style="display:none;">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  </div>
+  <h2>Nytt <em>passord</em></h2>
+  <div class="field">
+    <label>Nytt passord</label>
+    <input type="password" id="newPassword" placeholder="Minst 6 tegn">
+  </div>
+  <div class="field">
+    <label>Bekreft passord</label>
+    <input type="password" id="confirmPassword" placeholder="Gjenta passordet" onkeydown="if(event.key==='Enter')setPassword()">
+  </div>
+  <div class="msg error" id="errorMsg"></div>
+  <button class="btn" id="saveBtn" onclick="setPassword()">Lagre nytt passord</button>
+</div>
+
+<div class="card" id="errorCard" style="display:none;">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  </div>
+  <h2>Lenken er <em>utløpt</em></h2>
+  <p style="font-size:13px; color:var(--ink-muted); margin-bottom:1.5rem;">Reset-lenken er ikke lenger gyldig. Gå tilbake til appen og send en ny.</p>
+  <a href="/" style="display:block; text-align:center; color:var(--accent); font-size:14px;">← Tilbake til innlogging</a>
+</div>
+
+<script>
+const { createClient } = supabase;
+const sb = createClient(
+  'https://aftivbvqpzvzoxeudquk.supabase.co',
+  'sb_publishable_2WP-LeJ_pCqBKdqFzkevJg_6yLVCIX_'
+);
+
+async function init() {
+  const hash = window.location.hash;
+  const params = new URLSearchParams(hash.substring(1));
+  const type = params.get('type');
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+  const error = params.get('error');
+
+  if (error || !accessToken) {
+    document.getElementById('loadingCard').style.display = 'none';
+    document.getElementById('errorCard').style.display = 'block';
+    return;
+  }
+
+  if (type === 'recovery' && accessToken) {
+    const { error: sessionError } = await sb.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
+    if (sessionError) {
+      document.getElementById('loadingCard').style.display = 'none';
+      document.getElementById('errorCard').style.display = 'block';
+      return;
+    }
+    document.getElementById('loadingCard').style.display = 'none';
+    document.getElementById('resetCard').style.display = 'block';
+    document.getElementById('newPassword').focus();
+  } else {
+    window.location.href = '/';
+  }
+}
+
+async function setPassword() {
+  const password = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const errEl = document.getElementById('errorMsg');
+  const btn = document.getElementById('saveBtn');
+  errEl.textContent = '';
+
+  if (password.length < 6) { errEl.textContent = 'Passordet må være minst 6 tegn.'; return; }
+  if (password !== confirm) { errEl.textContent = 'Passordene er ikke like.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Lagrer...';
+
+  const { error } = await sb.auth.updateUser({ password });
+  if (error) {
+    errEl.textContent = 'Noe gikk galt. Prøv igjen.';
+    btn.disabled = false;
+    btn.textContent = 'Lagre nytt passord';
+  } else {
+    errEl.style.color = 'var(--green)';
+    errEl.textContent = '✓ Passord oppdatert! Sender deg til appen...';
+    setTimeout(() => { window.location.href = '/'; }, 2000);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
